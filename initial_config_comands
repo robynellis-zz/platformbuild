@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#Create a PV for image-registry to use
+oc create -f imageregistry-create-pv.yaml
+
+#Create a PVC for image registry to use
+oc create -f imageregistry-create-pvc.yaml -n openshift-image-registry
+
+#Patch the image registry operator config
+#Change from removed to manage
+#Add in the fields and names of the PVC
+#oc edit configs.imageregistry.operator.openshift.io -o yaml
+
+#create htpasswd
+touch htpasswd
+htpasswd -Bb htpasswd robynellis password
+
+#create secret from htpasswd
+oc create secret generic htpasswd --from-file=htpasswd -n openshift-config
+
+#Create secret from the AD BIND account password
+
+#Convert the AD TLS certificate to a CRT file
+
+#Create secret from DC TLS Certificate
+
+#add in the new Oauth config
+oc replace -f oauth-config-.yaml
+
+#create groups and do tasks on them
+oc --user=admin adm groups new local-admin
+oc --user=admin adm groups add-users local-admin robynellis
+
+#add the cluster admin role to the local-admin group
+oc --user=admin adm policy \
+    add-cluster-role-to-group cluster-admin local-admin
+
+#add sudoer role to the local-admin group
+oc adm policy add-cluster-role-to-group sudoer ocp-admin
+
+#remove the kubeconfig files and use usernames only!
+rm -f $HOME/.kube/config
+rm -f "openshift-install-dir
+
+#remove kubeadmin
+oc --user=admin delete secret kubeadmin -n kube-system

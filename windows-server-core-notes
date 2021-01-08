@@ -1,0 +1,17 @@
+sconfig from the console will get you to a basic config app on server core.
+
+enable remote management
+enable remote desktop
+download and install all windows updates
+you really want to be using microsoft AD for auth!!!
+what about LDAP auth for openshift?
+does this mean that UPI would be better since we can use microsoft DNS?
+
+Windows machine config operator needs to be downloaded and installed on your local machine.
+
+1. https://github.com/operator-framework/operator-sdk/blob/v0.17.x/doc/user/install-operator-sdk.md
+
+windows admin center:
+https://www.microsoft.com/en-us/evalcenter/evaluate-windows-admin-center
+
+
