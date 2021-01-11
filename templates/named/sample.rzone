@@ -1,0 +1,12 @@
+$TTL 1D
+@       IN SOA  @ homeroom.sample.local. (
+                                        12       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+
+@ IN NS homeroom.sample.local.
+1 IN PTR something1.sample.local.
+204 IN PTR something2.sample.local.
+2 IN PTR something3.sample.local.

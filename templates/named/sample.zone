@@ -1,0 +1,14 @@
+$TTL 1D
+@     IN SOA  @ nsserver.sample.local. (
+                                        11       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+        NS      nsserver.sample.local.
+        A       192.168.1.8
+$ORIGIN sample.local.
+something1 A 192.168.1.1
+something2 A 192.168.1.2
+something1 A 192.168.1.3
+

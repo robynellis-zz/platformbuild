@@ -1,0 +1,39 @@
+$TTL 1D
+@     IN SOA  @ nsserver.sample.local.                  (
+                                        12       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+        NS      nsserver.sample.local.
+        A       192.168.1.8
+$ORIGIN apps.ocp4.sample.local. 
+  A  172.16.0.10
+* A  172.16.0.10
+$ORIGIN ocp4.sample.local. 
+_etcd-server-ssl._tcp SRV 0 10 2380 etcd-0 
+_etcd-server-ssl._tcp SRV 0 10 2380 etcd-1 
+_etcd-server-ssl._tcp SRV 0 10 2380 etcd-2 
+helper-0 A 172.16.0.10
+loadbalancer A 172.16.0.10
+control-plane-0 A 172.16.0.20
+control-plane-1 A 172.16.0.21 
+control-plane-2 A 172.16.0.22
+
+#this is OLD!  Point to LB only
+api A 172.16.0.20 
+api A 172.16.0.21
+api A 172.16.0.22 
+
+#this is OLD!  Point to LB only
+api-int A 172.16.0.20
+api-int A 172.16.0.21
+api-int A 172.16.0.22 
+
+#newer versions of ocp do not require this.  Check install guide
+etcd-0 A 172.16.0.20 
+etcd-1 A 172.16.0.21
+etcd-2 A 172.16.0.22 
+compute-0 A 172.16.0.30
+compute-1 A 172.16.0.31
+compute-2 A 172.16.0.32
