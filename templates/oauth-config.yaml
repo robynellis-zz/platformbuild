@@ -4,9 +4,28 @@ metadata:
   name: cluster
 spec:
   identityProviders:
-  - name: Local Password
+  - name: my_htpasswd_provider
     mappingMethod: claim
     type: HTPasswd
     htpasswd:
       fileData:
-        name: htpasswd
+        name: htpass-secret
+  - name: MS_AD
+    challenge: true
+    login: true
+    mappingMethod: claim
+    type: LDAP
+    ldap:
+      attributes:
+        id: ["sAMAccountName"]
+        email: ["mail"]
+        name: ["displayName"]
+        preferredUsername: ["sAMAccountName"]
+      bindDN: "CN=ocpbind,CN=Users,DC=big-bank,DC=org"
+      bindPassword:
+        name: ldap-secret
+      insecure: false
+      ca:
+        name: ca-config-map
+        #url: "ldaps://bb-dc01.big-bank.org:636/cn=users,dc=big-bank,dc=org?uid?sub?(memberOf=cn=ocp-users,cn=users,dc=big-bank,dc=org)"
+      url: "ldaps://bb-dc01.big-bank.org:636/CN=Users,DC=big-bank,DC=org?sAMAccountName?sub?(objectClass=user)"
