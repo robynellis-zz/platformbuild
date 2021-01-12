@@ -14,10 +14,10 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: HomeLab
-      resource_pool: KVOCP
-      folder: /{{ datacenter_name }}/vm/KVOCP
-      name: KVbootstrap0
+      cluster: [insert your cluster name here]
+      resource_pool: [insert your RP name here]
+      folder: /{{ datacenter_name }}/vm/[insert your folder name here]
+      name: [insert your BootStrap VM name here]
       state: poweredon
       guest_id: rhel8_64Guest
       disk:
