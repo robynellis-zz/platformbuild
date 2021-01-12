@@ -3,6 +3,9 @@
 This repo will encompas everything I use to go from 0 to full-fledged openshift in my home lab.  This is setup for UPI (user provided infrastructure)
 due to the need for a "bare metal" type cluster for openshift virtualization.
 
+Terraform folder is not mine. That comes courtesy of Jason Horn from RedHat.
+https://github.com/hornjason/ocp4-vsphere
+
 Existing:
 Vmware Vsphere 6.7u3+ - standard switching - Two SAN datastores (one SATA and one SSD)
 
