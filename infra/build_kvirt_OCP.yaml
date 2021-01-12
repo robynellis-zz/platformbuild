@@ -6,42 +6,8 @@
     vcenter_user: "enter vcenter user"
     vcenter_pass: "enter vcenter pass"
     datacenter_name: "you get the idea"
-    resource_pool: "same same same"
-    vcenter_cluster: "figure out why not working"
-    vcenter_folder: "same same same"
   tasks:
-  - name: Create Bootstrap VM
-    community.vmware.vmware_guest:
-      hostname: "{{ vcenter_server }}"
-      username: "{{ vcenter_user }}"
-      password: "{{ vcenter_pass }}"
-      validate_certs: false
-      datacenter: "{{ datacenter_name }}"
-      cluster: [insert your cluster name here]
-      resource_pool: [insert your RP name here]
-      folder: /{{ datacenter_name }}/vm/[insert your folder name here]
-      name: [insert your BootStrap VM name here]
-      state: poweredon
-      guest_id: rhel8_64Guest
-      disk:
-      - size_gb: 120
-        type: thin
-        datastore: SATA-SAN
-      hardware:
-        version: 15
-        boot_firmware: BIOS
-        memory_mb: 16384
-        num_cpus: 4
-        scsi: paravirtual
-      networks:
-      - name: 172ocp
-        mac: 00:50:56:a1:60:22
-        ip: 172.16.20.109
-        netmask: 255.255.255.0
-        device_type: vmxnet3
-      wait_for_ip_address: false
-    delegate_to: localhost
-    register: deploy_vm
+  
 
   - name: Create Master VMs
     community.vmware.vmware_guest:
@@ -51,8 +17,8 @@
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
       cluster: HomeLab
-      resource_pool: "{{ resource_pool }}"
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
+      resource_pool: KVOCP
+      folder: /{{ datacenter_name }}/vm/KVOCP
       name: "{{ item.name }}"
       state: poweredon
       guest_id: rhel8_64Guest
@@ -76,9 +42,9 @@
     delegate_to: localhost
     register: deploy_vm
     loop:
-      - { name: 'ACMmaster0', mac: '00:50:56:a1:79:d9', ip: '172.16.20.103' }
-      - { name: 'ACMmaster1', mac: '00:50:56:a1:5c:08', ip: '172.16.20.104' }
-      - { name: 'ACMmaster2', mac: '00:50:56:a1:04:c5', ip: '172.16.20.105' }
+      - { name: 'KVmaster0', mac: '00:50:56:a1:79:d9', ip: '172.16.20.103' }
+      - { name: 'KVmaster1', mac: '00:50:56:a1:5c:08', ip: '172.16.20.104' }
+      - { name: 'KVmaster2', mac: '00:50:56:a1:04:c5', ip: '172.16.20.105' }
 
   - name: Create Worker VMs
     community.vmware.vmware_guest:
@@ -89,7 +55,7 @@
       datacenter: "{{ datacenter_name }}"
       cluster: HomeLab
       resource_pool: KVOCP
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
+      folder: /{{ datacenter_name }}/vm/KVOCP
       name: "{{ item.name }}"
       state: poweredon
       guest_id: rhel8_64Guest
