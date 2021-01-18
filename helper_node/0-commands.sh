@@ -1,39 +1,46 @@
 ##Install EPEL
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 
-##Install Imagemagik
-sudo dnf install -y ImageMagick
+##Install other packages
+sudo dnf install tmux httpd dhcp-server tftp-server syslinux haproxy \
+bind bind-utils git ansible python3 -y
 
 ##Configure firewall rules
 sudo firewall-cmd --permanent --add-service={dns,dhcp,http,https,tftp,ftp}
 sudo firewall-cmd --permanent --add-port={6443/tcp,22623/tcp,9000/tcp,8080/tcp,69/udp,4011/udp}
 sudo firewall-cmd --reload
 
-##Install dnsmasq
-dnf install dnsmasq -y
-***copy template from my repo***
+##Clone git repo
+mkdir ~/repos
+cd ~/repos
+git clone $REPO_URL
+cd ~
 
-##Setup PXE boot env
-sudo dnf install syslinux tftp-server -y
+##Setup DHCP server
+add steps for dhcpd Setup
+  -- bios boot
+  -- uefi boot
+  -- auto-boot by MAC address / VM role
+
+##Setup PXE env
 sudo mkdir -p /var/lib/tftpboot/pxelinux.cfg
-sudo wget -O /var/lib/tftpboot/ocp.png https://developers.redhat.com/blog/wp-content/uploads/2019/05/New_OpenShift_Featured_Image.png
-sudo convert -background Black -gravity center -resize 640x480 -extent 640x480 -depth 8 -colors 65536 /var/lib/tftpboot/ocp.png /var/lib/tftpboot/ocp.png
-sudo curl --output /var/www/html/images/rhcos-4.6.8-x86_64-live-rootfs.x86_64.img https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-rootfs.x86_64.img
-sudo curl --output /var/www/html/images/rhcos-4.6.8-x86_64-live-initramfs.x86_64.img https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-initramfs.x86_64.img
-sudo curl --output /var/www/html/images/rhcos-4.6.8-x86_64-live-kernel-x86_64 https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-kernel-x86_64
-sudo chown apache:apache /var/www/html/images/*
+sudo mkdir -p /var/lib/tftpboot/ocp
+sudo curl --output /var/lib/tftpboot/ocp/rhcos-4.6.8-x86_64-live-rootfs.x86_64.img \
+https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-rootfs.x86_64.img
+sudo curl --output /var/lib/tftpboot/ocp/rhcos-4.6.8-x86_64-live-initramfs.x86_64.img \
+https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-initramfs.x86_64.img
+sudo curl --output /var/lib/tftpboot/ocp/rhcos-4.6.8-x86_64-live-kernel-x86_64 \
+https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/latest/latest/rhcos-4.6.8-x86_64-live-kernel-x86_64
 cp -r /usr/share/syslinux/* /var/lib/tftpboot
-systemctl enable tftp.socket --now
+sudo systemctl enable tftp.socket --now
 
-##Install Haproxy
-dnf install haproxy -y
+##Configure Haproxy
 ***copy template from my repo****
 ***edit template****
 setsebool -P haproxy_connect_any on
 systemctl start haproxy
 
 ##Install httpd
-dnf install httpd -y
 edit /etc/httpd/conf/httpd.conf and set port to 8080 (learn to use sed for this)
 systemctl restart httpd
 mkdir -p /var/www/html/ignition
