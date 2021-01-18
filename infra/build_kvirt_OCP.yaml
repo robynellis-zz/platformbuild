@@ -12,77 +12,7 @@
     datastore: "your_datastore_name_here"
     network: "your_network_name_here"
   tasks:
-<<<<<<< HEAD:ansible/build_kvirt_OCP.yaml
-
-  - name: Create VM folder
-    community.vmware.vcenter_folder:
-      hostname: '{{ vcenter_server }}'
-      username: '{{ vcenter_user }}'
-      password: '{{ vcenter_pass }}'
-      datacenter_name: "{{ datacenter_name }}"
-      folder_name: "{{ vcenter_folder }}"
-      validate_certs: false
-      folder_type: vm
-      state: present
-    register: vm_folder_creation_result
-    delegate_to: localhost
-
-  - name: Add resource pool to vCenter
-    community.vmware.vmware_resource_pool:
-      hostname: '{{ vcenter_server }}'
-      username: '{{ vcenter_user }}'
-      password: '{{ vcenter_pass }}'
-      datacenter: '{{ datacenter_name }}'
-      cluster: '{{ vcenter_cluster }}'
-      resource_pool: '{{ resource_pool }}'
-      validate_certs: false
-      mem_shares: normal
-      mem_limit: -1
-      mem_reservation: 0
-      mem_expandable_reservations: true
-      cpu_shares: normal
-      cpu_limit: -1
-      cpu_reservation: 0
-      cpu_expandable_reservations: true
-      state: present
-    delegate_to: localhost
-
-  - name: Create Bootstrap VM
-    community.vmware.vmware_guest:
-      hostname: "{{ vcenter_server }}"
-      username: "{{ vcenter_user }}"
-      password: "{{ vcenter_pass }}"
-      validate_certs: false
-      datacenter: "{{ datacenter_name }}"
-      cluster: '{{ vcenter_cluster }}'
-      resource_pool: '{{ resource_pool }}'
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
-      name: [insert your BootStrap VM name here]
-      state: poweredon
-      guest_id: rhel8_64Guest
-      disk:
-      - size_gb: 120
-        type: thin
-        datastore: SATA-SAN
-      hardware:
-        version: 15
-        boot_firmware: BIOS
-        memory_mb: 16384
-        num_cpus: 4
-        scsi: paravirtual
-      networks:
-      - name: "{{ network }}"
-        mac: 00:50:56:00:00:00
-        ip: 0.0.0.0
-        netmask: 255.255.255.0
-        device_type: vmxnet3
-      wait_for_ip_address: false
-    delegate_to: localhost
-    register: deploy_vm
-=======
   
->>>>>>> 68e71e54281f33b14e0e08e0ca70ae86b6386501:infra/build_kvirt_OCP.yaml
-
   - name: Create Master VMs
     community.vmware.vmware_guest:
       hostname: "{{ vcenter_server }}"
@@ -99,7 +29,7 @@
       disk:
       - size_gb: 120
         type: thin
-        datastore: SSD-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
