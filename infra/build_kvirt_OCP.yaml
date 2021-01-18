@@ -12,7 +12,6 @@
     datastore: "your_datastore_name_here"
     network: "your_network_name_here"
   tasks:
-<<<<<<< HEAD:ansible/build_kvirt_OCP.yaml
 
   - name: Create VM folder
     community.vmware.vcenter_folder:
@@ -79,9 +78,6 @@
       wait_for_ip_address: false
     delegate_to: localhost
     register: deploy_vm
-=======
-  
->>>>>>> 68e71e54281f33b14e0e08e0ca70ae86b6386501:infra/build_kvirt_OCP.yaml
 
   - name: Create Master VMs
     community.vmware.vmware_guest:
