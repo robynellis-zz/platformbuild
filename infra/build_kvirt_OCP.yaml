@@ -78,7 +78,7 @@
       wait_for_ip_address: false
     delegate_to: localhost
     register: deploy_vm
-
+  
   - name: Create Master VMs
     community.vmware.vmware_guest:
       hostname: "{{ vcenter_server }}"
@@ -95,7 +95,7 @@
       disk:
       - size_gb: 120
         type: thin
-        datastore: SSD-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
