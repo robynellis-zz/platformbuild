@@ -11,7 +11,7 @@
     vcenter_folder: "your_folder_name_here"
     datastore: "your_datastore_name_here"
   tasks:
-<<<<<<< HEAD:ansible/build_ACM_OCP.yaml
+  
   - name: Create VM folder
     community.vmware.vcenter_folder:
       hostname: '{{ vcenter_server }}'
@@ -53,20 +53,7 @@
 ###  Modify Templates on loadbalancer VM ###
 ###  Start Services on loadbalancer VM ###
 ###  Test Services on loadbalancer VM ###
-=======
-  - name: Create a VM folder on given datacenter
-  community.vmware.vcenter_folder:
-    hostname: '{{ vcenter_hostname }}'
-    username: '{{ vcenter_username }}'
-    password: '{{ vcenter_password }}'
-    datacenter_name: "{{ datacenter_name }}"
-    folder_name: ACMOCP
-    folder_type: vm
-    state: present
-  register: vm_folder_creation_result
-  delegate_to: localhost
->>>>>>> 68e71e54281f33b14e0e08e0ca70ae86b6386501:infra/build_ACM_OCP.yaml
-
+  
   - name: Create Bootstrap VM
     community.vmware.vmware_guest:
       hostname: "{{ vcenter_server }}"
@@ -92,8 +79,8 @@
         scsi: paravirtual
       networks:
       - name: 172ocp
-        mac: 00:50:56:a2:64:f3
-        ip: 172.16.20.112
+        mac: 00:50:56:00:00:00
+        ip: 0.0.0.0
         netmask: 255.255.255.0
         device_type: vmxnet3
       wait_for_ip_address: false
