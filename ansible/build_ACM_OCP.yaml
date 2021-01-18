@@ -2,14 +2,57 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    vcenter_server: "enter vcenter name here"
-    vcenter_user: "enter vcenter user"
-    vcenter_pass: "enter vcenter pass"
-    datacenter_name: "you get the idea"
-    resource_pool: "same same same"
-    vcenter_cluster: "figure out why not working"
-    vcenter_folder: "same same same"
+    vcenter_server: "vcenter.sample.me"
+    vcenter_user: "your_deploy_user@vsphere.local"
+    vcenter_pass: "enter_password_here"
+    datacenter_name: "your_DC_name_here"
+    resource_pool: "your_resource_pool_here"
+    vcenter_cluster: "your_cluster_name_here"
+    vcenter_folder: "your_folder_name_here"
+    datastore: "your_datastore_name_here"
   tasks:
+  - name: Create VM folder
+    community.vmware.vcenter_folder:
+      hostname: '{{ vcenter_server }}'
+      username: '{{ vcenter_user }}'
+      password: '{{ vcenter_pass }}'
+      datacenter_name: "{{ datacenter_name }}"
+      folder_name: "{{ vcenter_folder }}"
+      validate_certs: false
+      folder_type: vm
+      state: present
+    register: vm_folder_creation_result
+    delegate_to: localhost
+
+  - name: Add resource pool to vCenter
+    community.vmware.vmware_resource_pool:
+      hostname: '{{ vcenter_server }}'
+      username: '{{ vcenter_user }}'
+      password: '{{ vcenter_pass }}'
+      datacenter: '{{ datacenter_name }}'
+      cluster: '{{ vcenter_cluster }}'
+      resource_pool: '{{ resource_pool }}'
+      validate_certs: false
+      mem_shares: normal
+      mem_limit: -1
+      mem_reservation: 0
+      mem_expandable_reservations: true
+      cpu_shares: normal
+      cpu_limit: -1
+      cpu_reservation: 0
+      cpu_expandable_reservations: true
+      state: present
+    delegate_to: localhost
+
+### add dhcp server reservations for acm cluster VMs ###
+### add lines to default menu for PXE boot of acm cluster VMs###
+### Create loadbalancer VM ####
+### Install Packages on loadbalancer VM ###
+###  Copy templates to locations on loadbalancer VM ###
+###  Modify Templates on loadbalancer VM ###
+###  Start Services on loadbalancer VM ###
+###  Test Services on loadbalancer VM ###
+
   - name: Create Bootstrap VM
     community.vmware.vmware_guest:
       hostname: "{{ vcenter_server }}"
@@ -17,16 +60,16 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: [insert your cluster name here]
-      resource_pool: [insert your RP name here]
-      folder: /{{ datacenter_name }}/vm/[insert your folder name here]
-      name: [insert your BootStrap VM name here]
+      cluster: "{{ vcenter_cluster }}"
+      resource_pool: "{{ resource_pool }}"
+      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
+      name: enter_a_name_here
       state: poweredon
       guest_id: rhel8_64Guest
       disk:
       - size_gb: 120
         type: thin
-        datastore: SATA-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
@@ -35,8 +78,8 @@
         scsi: paravirtual
       networks:
       - name: 172ocp
-        mac: 00:50:56:a1:60:22
-        ip: 172.16.20.109
+        mac: 00:50:56:a2:64:f3
+        ip: 172.16.20.112
         netmask: 255.255.255.0
         device_type: vmxnet3
       wait_for_ip_address: false
@@ -50,7 +93,7 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: HomeLab
+      cluster: "{{ vcenter_cluster }}"
       resource_pool: "{{ resource_pool }}"
       folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
       name: "{{ item.name }}"
@@ -59,7 +102,7 @@
       disk:
       - size_gb: 120
         type: thin
-        datastore: SSD-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
@@ -76,9 +119,9 @@
     delegate_to: localhost
     register: deploy_vm
     loop:
-      - { name: 'ACMmaster0', mac: '00:50:56:a1:79:d9', ip: '172.16.20.103' }
-      - { name: 'ACMmaster1', mac: '00:50:56:a1:5c:08', ip: '172.16.20.104' }
-      - { name: 'ACMmaster2', mac: '00:50:56:a1:04:c5', ip: '172.16.20.105' }
+      - { name: 'master0', mac: '00:50:56:00:00:00', ip: '0.0.0.0' }
+      - { name: 'master1', mac: '00:50:56:00:00:00', ip: '0.0.0.0' }
+      - { name: 'master2', mac: '00:50:56:00:00:00', ip: '0.0.0.0' }
 
   - name: Create Worker VMs
     community.vmware.vmware_guest:
@@ -87,8 +130,8 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: HomeLab
-      resource_pool: KVOCP
+      cluster: "{{ vcenter_cluster }}"
+      resource_pool: "{{ resource_pool }}"
       folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
       name: "{{ item.name }}"
       state: poweredon
@@ -96,12 +139,12 @@
       disk:
       - size_gb: 120
         type: thin
-        datastore: SSD-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
-        memory_mb: 98304
-        num_cpus: 16
+        memory_mb: 24576
+        num_cpus: 4
         scsi: paravirtual
       networks:
       - name: 172ocp
@@ -109,14 +152,11 @@
         ip: "{{ item.ip }}"
         netmask: 255.255.255.0
         device_type: vmxnet3
-      - name: 172ocp
-        connected: no
-        start_connected: no
-        device_type: vmxnet3
       wait_for_ip_address: false
     delegate_to: localhost
     register: deploy_vm
     loop:
-      - { name: 'KVworker0', mac: '00:50:56:a1:9b:b2', ip: '172.16.20.104' }
-      - { name: 'KVworker1', mac: '00:50:56:a1:4f:d3', ip: '172.16.20.105' }
-      - { name: 'KVworker2', mac: '00:50:56:a1:27:29', ip: '172.16.20.106' }
+      - { name: 'ACMworker0', mac: '00:50:56:00:00:00', ip: '0.0.0.0' }
+      - { name: 'ACMworker1', mac: '00:50:56:00:0:00', ip: '0.0.0.0' }
+      - { name: 'ACMworker2', mac: '00:50:56:00:00:00', ip: '0.0.0.0' }
+
