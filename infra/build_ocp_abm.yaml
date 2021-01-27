@@ -2,17 +2,17 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    vcenter_server: "vcenter.sample.me"
-    vcenter_user: "your_deploy_user@vsphere.local"
-    vcenter_pass: "enter_password_here"
-    datacenter_name: "your_DC_name_here"
-    resource_pool: "your_resource_pool_here"
-    vcenter_cluster: "your_cluster_name_here"
-    vcenter_folder: "your_folder_name_here"
-    datastore: "your_datastore_name_here"
-    network: "your_network_name_here"
+    vcenter_server: "vcenter URL"
+    vcenter_user: "user with perms"
+    vcenter_pass: "user password"
+    datacenter_name: "your dc name"
+    datastore: "your datastore"
+    cluster: "your cluster"
+    resource_pool: "your resource pool"
+    folder: "your folder"
+    isopath: "your path to abm iso"
+    netlabel: "your network name"
   tasks:
-
   - name: Create VM folder
     community.vmware.vcenter_folder:
       hostname: '{{ vcenter_server }}'
@@ -46,39 +46,6 @@
       state: present
     delegate_to: localhost
 
-  - name: Create Bootstrap VM
-    community.vmware.vmware_guest:
-      hostname: "{{ vcenter_server }}"
-      username: "{{ vcenter_user }}"
-      password: "{{ vcenter_pass }}"
-      validate_certs: false
-      datacenter: "{{ datacenter_name }}"
-      cluster: '{{ vcenter_cluster }}'
-      resource_pool: '{{ resource_pool }}'
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
-      name: [insert your BootStrap VM name here]
-      state: poweredon
-      guest_id: rhel8_64Guest
-      disk:
-      - size_gb: 120
-        type: thin
-        datastore: "{{ datastore }}"
-      hardware:
-        version: 15
-        boot_firmware: BIOS
-        memory_mb: 16384
-        num_cpus: 4
-        scsi: paravirtual
-      networks:
-      - name: "{{ network }}"
-        mac: 00:50:56:00:00:00
-        ip: 0.0.0.0
-        netmask: 255.255.255.0
-        device_type: vmxnet3
-      wait_for_ip_address: false
-    delegate_to: localhost
-    register: deploy_vm
-  
   - name: Create Master VMs
     community.vmware.vmware_guest:
       hostname: "{{ vcenter_server }}"
@@ -86,9 +53,9 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: '{{ vcenter_cluster }}'
-      resource_pool: '{{ resource_pool }}'
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
+      cluster: "{{ cluster }}"
+      resource_pool: "{{ resource_pool }}"
+      folder: /{{ datacenter_name }}/vm/{{ folder }}
       name: "{{ item.name }}"
       state: poweredon
       guest_id: rhel8_64Guest
@@ -98,12 +65,19 @@
         datastore: "{{ datastore }}"
       hardware:
         version: 15
-        boot_firmware: BIOS
+        boot_firmware: EFI
         memory_mb: 24576
         num_cpus: 4
         scsi: paravirtual
+      cdrom:
+          - controller_number: 1
+            controller_type: sata
+            unit_number: 0
+            state: present
+            type: iso
+            iso_path: "{{ isopath }}"
       networks:
-      - name: "{{ network }}"
+      - name: "{{ netlabel }}"
         mac: "{{ item.mac }}"
         ip: "{{ item.ip }}"
         netmask: 255.255.255.0
@@ -123,9 +97,9 @@
       password: "{{ vcenter_pass }}"
       validate_certs: false
       datacenter: "{{ datacenter_name }}"
-      cluster: '{{ vcenter_cluster }}'
-      resource_pool: '{{ resource_pool }}' 
-      folder: /{{ datacenter_name }}/vm/{{ vcenter_folder }}
+      cluster: "{{ cluster }}"
+      resource_pool: "{{ resource_pool }}"
+      folder: /{{ datacenter_name }}/vm/{{ folder }}
       name: "{{ item.name }}"
       state: poweredon
       guest_id: rhel8_64Guest
@@ -133,19 +107,29 @@
       - size_gb: 120
         type: thin
         datastore: "{{ datastore }}"
+      - size_gb: 1024
+        type: thin
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
-        boot_firmware: BIOS
+        boot_firmware: EFI
         memory_mb: 98304
         num_cpus: 16
         scsi: paravirtual
+      cdrom:
+          - controller_number: 1
+            controller_type: sata
+            unit_number: 0
+            state: present
+            type: iso
+            iso_path: "{{ isopath }}"
       networks:
-      - name: "{{ network }}"
+      - name: "{{ netlabel }}"
         mac: "{{ item.mac }}"
         ip: "{{ item.ip }}"
         netmask: 255.255.255.0
         device_type: vmxnet3
-      - name: "{{ network }}"
+      - name: "{{ netlabel }}"
         connected: no
         start_connected: no
         device_type: vmxnet3

@@ -1,3 +1,7 @@
 run these playbooks using ansible
 
 ansible-playbook your_env.yaml
+
+1.  Copy down repo to your home dir.
+2.  copy / edit playbooks to your liking.
+
