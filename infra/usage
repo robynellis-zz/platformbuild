@@ -1,0 +1,3 @@
+run these playbooks using ansible
+
+ansible-playbook your_env.yaml

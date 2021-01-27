@@ -62,7 +62,7 @@
       disk:
       - size_gb: 120
         type: thin
-        datastore: SATA-SAN
+        datastore: "{{ datastore }}"
       hardware:
         version: 15
         boot_firmware: BIOS
