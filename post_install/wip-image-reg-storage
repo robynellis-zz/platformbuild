@@ -1,5 +1,0 @@
-#!/bin/bash
-
-oc create -f imageregistry-create-pv.yaml
-oc create -f imageregistry-create-pvc.yaml -n openshift-image-registry
-#oc patch (insert this command here)
