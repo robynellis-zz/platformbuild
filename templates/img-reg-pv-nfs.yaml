@@ -6,9 +6,8 @@ spec:
   accessModes:
     - ReadWriteMany
   capacity:
-      storage: 100Gi
+      storage: 200Gi
   nfs:
-    path: /mnt/SATA/ocpsata
-    server: 192.168.1.213
+    path: /your/path/here
+    server: 0.0.0.0
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
