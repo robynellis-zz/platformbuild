@@ -32,7 +32,7 @@
       username: '{{ vcenter_user }}'
       password: '{{ vcenter_pass }}'
       datacenter: '{{ datacenter_name }}'
-      cluster: '{{ vcenter_cluster }}'
+      cluster: '{{ cluster }}'
       resource_pool: '{{ resource_pool }}'
       validate_certs: false
       mem_shares: normal
