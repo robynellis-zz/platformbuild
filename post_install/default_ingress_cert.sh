@@ -6,6 +6,9 @@
 sudo dnf install certbot -y
 
 #make the initial request for a wildcard certificate using a dns01 challenge
+#look in templates dir for certbot commands.  Pick your dns provider.
+#customize template and run to get your cert.
+#I recommend cloudflare.  But YMMV.
 
 #create a configmap with the obtained certificates
 oc --namespace openshift-ingress create secret tls custom-certs-default \

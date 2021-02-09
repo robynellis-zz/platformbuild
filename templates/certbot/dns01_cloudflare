@@ -1,0 +1,17 @@
+#install certbot.  RHEL/Fedora instructions below
+dnf install certbot -y 
+
+#taken from https://certbot-dns-cloudflare.readthedocs.io/en/stable/
+
+#Create api creds from cloudflare and copy/paste to an .ini file
+mkdir -pv ~/.secrets/certbot
+echo "dns_cloudflare_api_token = your_copied_key_data" > ~/.secrets/certbot/cloudflare.ini
+chmod 600 ~/.secrets/certbot/cloudflare.ini
+
+#run the request as follows
+
+certbot certonly \
+  --dns-cloudflare \
+  --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini \
+  --dns-cloudflare-propagation-seconds 60 \
+  -d '*.example.com'
