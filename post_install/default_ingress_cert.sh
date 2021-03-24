@@ -20,7 +20,7 @@ certbot certonly --manual --preferred-challenges=dns \
 #create a configmap with the obtained certificates
 oc --namespace openshift-ingress create secret tls custom-certs-default \
 --cert=tls.crt --key=tls.key
-#or use pem files.  whichever work
+#or use pem files.  whichever work.  fullchain.pem will normally give you all you need.
 
 #Update the IngressController CR to reference the new certificate secret
 oc patch --type=merge --namespace openshift-ingress-operator ingresscontrollers/default \
