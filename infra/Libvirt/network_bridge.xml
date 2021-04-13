@@ -1,0 +1,5 @@
+<network>
+  <name>baremetal</name>
+  <forward mode="bridge"/>
+  <bridge name="baremetal" />
+</network>
