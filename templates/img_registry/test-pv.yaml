@@ -1,12 +1,12 @@
-apiVersion: "v1"
-kind: "PersistentVolumeClaim"
+apiVersion: v1
+kind: PersistentVolume
 metadata:
-  name: "image-registry"
+  name: test
 spec:
   accessModes:
     - ReadWriteOnce
-  resources:
-    requests:
+  capacity:
       storage: 100Gi
+  volumeType: Filesystem
   storageClassName: ocs-external-storagecluster-ceph-rbd
-  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain

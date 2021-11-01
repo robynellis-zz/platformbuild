@@ -1,0 +1,34 @@
+apiVersion: nmstate.io/v1beta1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: node1-optnic-policy 
+spec:
+  nodeSelector: 
+    kubernetes.io/hostname: ocpedge1.cluster.domain.sample 
+  desiredState:
+    interfaces:
+    - name: ens224 
+      description: Configuring ens224 on node01 
+      type: ethernet 
+      state: up 
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 1.2.3.4
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+    - name: ens256
+      description: configuring ens256 on node01
+      type: ethernet
+      state: up
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 1.2.3.5
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+

@@ -1,0 +1,97 @@
+csiDriver:
+  name: "org.democratic-csi.nfs"
+
+storageClasses:
+- name: freenas-nfs-csi
+  defaultClass: false
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+  allowVolumeExpansion: true
+  parameters:
+    fsType: nfs
+      
+  mountOptions:
+  - noatime
+  - nfsvers=3
+  secrets:
+    provisioner-secret:
+    controller-publish-secret:
+    node-stage-secret:
+    node-publish-secret:
+    controller-expand-secret:
+
+driver:
+  config:
+    driver: freenas-nfs
+    instance_id:
+    httpConnection:
+      protocol: http
+      host: sample.domain.suffix
+      port: 80
+      # This is the API key that we generated previously
+      apiKey: 1-wfQFewfiZ1f01O5XU7uV7VZiVthisisnotavalidkeyOe4uUKAJGPAO2uJx7fk50
+      username: root
+      allowInsecure: true
+      apiVersion: 2
+    sshConnection:
+      host: sample.domain.suffix
+      port: 22
+      username: root
+      # This is the SSH key that we generated for passwordless authentication
+      privateKey: |
+        -----BEGIN OPENSSH PRIVATE KEY-----
+        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
+        -----END OPENSSH PRIVATE KEY-----
+    zfs:
+      # Make sure to use the storage pool that was created previously
+      datasetParentName: poolname/k8s/nfs/vols
+      detachedSnapshotsDatasetParentName: poolname/k8s/nfs/snaps
+      datasetEnableQuotas: true
+      datasetEnableReservation: false
+      datasetPermissionsMode: "0777"
+      datasetPermissionsUser: root
+      datasetPermissionsGroup: wheel
+    nfs:
+      shareHost: 1.2.3.4
+      shareAlldirs: false
+      shareAllowedHosts: []
+      shareAllowedNetworks: []
+      shareMaprootUser: root
+      shareMaprootGroup: wheel
+      shareMapallUser: ""
+      shareMapallGroup: ""

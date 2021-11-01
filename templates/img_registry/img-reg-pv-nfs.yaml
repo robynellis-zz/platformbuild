@@ -8,6 +8,6 @@ spec:
   capacity:
       storage: 200Gi
   nfs:
-    path: /your/path/here
-    server: 0.0.0.0
+    path: /mnt/SATA/ocpedgeimgreg
+    server: 1.2.3.4
   persistentVolumeReclaimPolicy: Retain
