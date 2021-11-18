@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-operators-redhat 
+
+  labels:
+    openshift.io/cluster-monitoring: "true" 
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-logging
+  annotations:
+    openshift.io/node-selector: ""
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "elasticsearch-operator"
+  namespace: "openshift-operators-redhat"
+spec:
+  channel: "4.6" 
+  installPlanApproval: "Automatic"
+  source: "redhat-operators" 
+  sourceNamespace: "openshift-marketplace"
+  name: "elasticsearch-operator"
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cluster-logging
+  namespace: openshift-logging
+spec:
+  channel: "4.6" 
+  name: cluster-logging
+  source: redhat-operators 
+  sourceNamespace: openshift-marketplace
+
+---
+
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-operators-redhat
+  namespace: openshift-operators-redhat 
+spec: {}
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cluster-logging
+  namespace: openshift-logging
+spec:
+  targetNamespaces:
+  - openshift-logging
+
+---
+
+apiVersion: "logging.openshift.io/v1"
+kind: "ClusterLogging"
+metadata:
+  name: "instance" 
+  namespace: "openshift-logging"
+spec:
+  managementState: "Managed"
+  curation:
+    curator:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      schedule: 30 3 * * *
+    type: curator 
+  logStore:
+    type: "elasticsearch"  
+    retentionPolicy: 
+      application:
+        maxAge: 4d
+      infra:
+        maxAge: 7d
+      audit:
+        maxAge: 7d
+    elasticsearch:
+      nodeCount: 3
+      nodeSelector: 
+        node-role.kubernetes.io/infra: '' 
+      storage:
+        storageClassName: "thin" 
+        size: 200G
+      resources: 
+        requests:
+          memory: "8Gi"
+      proxy: 
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+             memory: 256Mi
+      redundancyPolicy: "SingleRedundancy"
+  visualization:
+    type: "kibana"  
+    kibana:
+      replicas: 1
+      nodeSelector: 
+        node-role.kubernetes.io/infra: '' 
+  collection:
+    logs:
+      type: "fluentd"  
+      fluentd: {}
