@@ -1,0 +1,135 @@
+#!ipxe
+
+set ocp_ver 4.8.14
+set kernel_url http://1.2.3.1:8080/install/rhcos-4.8.14-x86_64-live-kernel-x86_64
+set initrd_url http://1.2.3.1:8080/install/rhcos-4.8.14-x86_64-live-initramfs.x86_64.img
+set rootfs_url http://1.2.3.1:8080/install/rhcos-4.8.14-x86_64-live-rootfs.x86_64.img
+set install_dev /dev/sda
+set dns1 1.2.3.1
+set gateway 1.2.3.1
+set initrd_name main
+set auto_conf none
+set interface ens192
+set netmask 255.255.255.0
+set bootstrap_ign_url http://1.2.3.1:8080/ignition/bootstrap.ign
+set master_ign_url http://1.2.3.1:8080/ignition/master.ign
+set worker_ign_url http://1.2.3.1:8080/ignition/worker.ign
+
+
+# Some menu defaults
+set menu-timeout 5000
+set submenu-timeout ${menu-timeout}
+isset ${menu-default} || set menu-default exit
+
+## Figure out if client is 64-bit capable
+#cpuid --ext 29 && set arch x64 || set arch x86
+#cpuid --ext 29 && set archl amd64 || set archl i386
+
+###################### MAIN MENU ####################################
+
+:start
+menu Openshift install menu
+item --gap -- 	  --------------Install OCP ----------------------------------
+
+item bootstrap bootstrap
+item ocpsample1 ocpsample1
+item ocpsample2 ocpsample2
+item ocpsample3 ocpsample3
+item ocpsample4 ocpsample4
+item ocpsample5 ocpsample5
+item ocpsample6 ocpsample6
+item shell iPXE shell
+item exit Exit to Bios
+
+choose --default exit option && goto ${option}
+
+:bootstrap
+
+	set hostname bootstrap.sample.domain.suffix
+	set static_ip_address 1.2.3.36
+	set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+	prompt press enter to boot (or reset your system to cancel)
+
+	kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${bootstrap_ign_url}
+	initrd --name ${initrd_name} ${initrd_url}
+	boot
+
+
+
+:ocpsample1
+
+        set hostname ocpsample1.sample.domain.suffix
+        set static_ip_address 1.2.3.60
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${master_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
+
+:ocpsample2
+
+
+        set hostname ocpsample2.sample.domain.suffix
+        set static_ip_address 1.2.3.61
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${master_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
+
+:ocpsample3
+
+        set hostname ocpsample.sample.domain.suffix
+        set static_ip_address 1.2.3.62
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${master_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
+
+
+:ocpsample4
+
+        set hostname ocpsample.sample.domain.suffix
+        set static_ip_address 1.2.3.63
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${worker_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
+
+
+:ocpsample5
+
+
+        set hostname ocpsample.sample.domain.suffix
+        set static_ip_address 1.2.3.64
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${worker_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
+
+:ocpsample6
+
+
+        set hostname ocpsample6.sample.domain.suffix
+        set static_ip_address 1.2.3.65
+        set static_ip ${static_ip_address}::${gateway}:${netmask}:${hostname}:${interface}:${auto_conf}
+
+        prompt press enter to boot (or reset your system to cancel)
+
+        kernel ${kernel_url} initrd=${initrd_name} coreos.inst.install_dev=${install_dev} ip=${static_ip} ipv6.disable=1 nameserver=${dns1} coreos.live.rootfs_url=${rootfs_url} coreos.inst.ignition_url=${worker_ign_url}
+        initrd --name ${initrd_name} ${initrd_url}
+        boot
