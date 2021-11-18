@@ -1,0 +1,50 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  creationTimestamp: null
+  labels:
+    machine.openshift.io/cluster-api-cluster: dev-<GUID>
+  name: dev-<GUID>-infra
+  namespace: openshift-machine-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: dev-<GUID>
+      machine.openshift.io/cluster-api-machineset: dev-<GUID>-infra
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        machine.openshift.io/cluster-api-cluster: dev-<GUID>
+        machine.openshift.io/cluster-api-machine-role: infra
+        machine.openshift.io/cluster-api-machine-type: infra
+        machine.openshift.io/cluster-api-machineset: dev-<GUID>-infra
+    spec:
+      metadata:
+        creationTimestamp: null
+        labels:
+          node-role.kubernetes.io/infra: ""
+      providerSpec:
+        value:
+          apiVersion: vsphereprovider.openshift.io/v1beta1
+          credentialsSecret:
+            name: vsphere-cloud-credentials
+          diskGiB: 120
+          kind: VSphereMachineProviderSpec
+          memoryMiB: 32768
+          metadata:
+            creationTimestamp: null
+          network:
+            devices:
+            - networkName: <your_vmware_network_name>
+          numCPUs: 4
+          numCoresPerSocket: 2
+          template: dev-<GUID>-rhcos
+          userDataSecret:
+            name: worker-user-data
+          workspace:
+            datacenter: <your_vmware_datacenter_name>
+            datastore: <your_vmware_datastore>
+            folder: /DC/vm/folder
+            server: <your_vcenter_server>
