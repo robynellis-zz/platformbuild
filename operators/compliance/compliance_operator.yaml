@@ -1,0 +1,64 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: compliance-operator
+  namespace: openshift-compliance
+spec:
+  targetNamespaces:
+  - openshift-compliance
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: compliance-operator-sub
+  namespace: openshift-compliance
+spec:
+  channel: "release-0.1"
+  installPlanApproval: Automatic
+  name: compliance-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+
+---
+
+apiVersion: compliance.openshift.io/v1alpha1
+kind: ScanSetting
+metadata:
+  name: default-auto-apply
+  namespace: openshift-compliance
+autoUpdateRemediations: true 
+autoApplyRemediations: true 
+rawResultStorage:
+  pvAccessModes:
+    - ReadWriteOnce
+  rotation: 3
+  size: 1Gi
+schedule: 0 1 * * *
+roles:
+  - worker
+  - master
+scanTolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+
+---
+
+apiVersion: compliance.openshift.io/v1alpha1
+kind: ScanSettingBinding
+metadata:
+  name: cis-compliance
+  namespace: openshift-compliance
+profiles:
+  - name: ocp4-cis-node
+    kind: Profile
+    apiGroup: compliance.openshift.io/v1alpha1
+  - name: ocp4-cis
+    kind: Profile
+    apiGroup: compliance.openshift.io/v1alpha1
+settingsRef:
+  name: default
+  kind: ScanSetting
+  apiGroup: compliance.openshift.io/v1alpha1

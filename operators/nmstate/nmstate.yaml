@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-nmstate
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "kubernetes-nmstate-operator"
+  namespace: openshift-nmstate
+spec:
+  channel: "4.8" 
+  installPlanApproval: "Automatic"
+  source: "redhat-operators" 
+  sourceNamespace: "openshift-marketplace"
+  name: "kubernetes-nmstate-operator"
+
+---
+
+apiVersion: nmstate.io/v1beta1
+kind: NMState
+metadata:
+  name: nmstate
+spec:
+  nodeSelector:
+    beta.kubernetes.io/arch: amd64
+
+---
+
+apiVersion: nmstate.io/v1beta1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: node1-optnic-policy 
+spec:
+  nodeSelector: 
+    kubernetes.io/hostname: <node1> 
+  desiredState:
+    interfaces:
+    - name: <your_interface_name> 
+      description: Configuring <your_interface_name> on node01 
+      type: ethernet 
+      state: up 
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 1.2.3.4
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+    - name: <your_interface_name>
+      description: configuring <your_interface_name> on node01
+      type: ethernet
+      state: up
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 2.2.2.2
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+
+---
+
+apiVersion: nmstate.io/v1beta1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: node2-optnic-policy 
+spec:
+  nodeSelector: 
+    kubernetes.io/hostname: <node 2> 
+  desiredState:
+    interfaces:
+    - name: <your_interface_name>
+      description: Configuring <your_interface_name> on node02 
+      type: ethernet 
+      state: up 
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 192.168.2.241
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+    - name: <your_interface_name>
+      description: configuring <your_interface_name> on node02
+      type: ethernet
+      state: up
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 3.3.3.3
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+
+---
+
+apiVersion: nmstate.io/v1beta1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: node3-optnic-policy 
+spec:
+  nodeSelector: 
+    kubernetes.io/hostname: <node 3> 
+  desiredState:
+    interfaces:
+    - name: <your_interface_name>
+      description: Configuring <your_interface_name> on node03 
+      type: ethernet 
+      state: up 
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 4.4.4.4
+          prefix-length: 24
+        enabled: true
+      mtu: 9000
+    - name: <your_interface_name>
+      description: configuring <your_interface_name> on node03
+      type: ethernet
+      state: up
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+        - ip: 5.5.5.5
+          prefix-length: 24
+        enabled: true
+      mtu: 9000

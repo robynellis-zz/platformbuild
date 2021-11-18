@@ -1,0 +1,35 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "file-integrity-operator"
+  namespace: "openshift-file-integrity"
+spec:
+  channel: "4.6" 
+  installPlanApproval: "Automatic"
+  source: "redhat-operators" 
+  sourceNamespace: "openshift-marketplace"
+  name: "file-integrity-operator"
+
+---
+
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: file-integrity-operator
+  namespace: openshift-file-integrity
+spec:
+  targetNamespaces:
+  - openshift-file-integrity
+
+---
+
+apiVersion: fileintegrity.openshift.io/v1alpha1
+kind: FileIntegrity
+metadata:
+  name: coreos-fileintegrity
+  namespace: openshift-file-integrity
+spec:
+  nodeSelector:
+    node.openshift.io/os_id: "rhcos"
+  config: {}
+

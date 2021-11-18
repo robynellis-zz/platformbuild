@@ -1,0 +1,89 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: argocd-cluster-role
+rules:
+  - verbs:
+      - '*'
+    apiGroups:
+      - ''
+    resources:
+      - config
+      - configs
+      - secrets
+      - configmaps
+      - resourcequotas
+      - limitranges
+      - services
+      - serviceaccounts
+      - deployments
+      - deploymentconfigs
+  - verbs:
+      - '*'
+    apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - batch
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - logging.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - imageregistry.operator.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - apps
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - policy
+    resources:
+      - podsecuritypolicies
+  - verbs:
+      - '*'
+    apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+  - verbs:
+      - '*'
+    apiGroups:
+      - noobaa.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'nmstate.io'
+    resources:
+      - '*'
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-secrets-argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argocd-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: openshift-gitops-argocd-application-controller
+  namespace: openshift-gitops
